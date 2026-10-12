@@ -6,10 +6,12 @@ import {
   X, 
   FileText, 
   Terminal, 
-  Sparkles
+  Sparkles,
+  ShieldCheck,
+  BookOpen
 } from 'lucide-react';
 
-export default function Navbar({ theme, toggleTheme, onOpenResume }) {
+export default function Navbar({ theme, toggleTheme, onOpenResume, onOpenAdmin }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
@@ -22,7 +24,7 @@ export default function Navbar({ theme, toggleTheme, onOpenResume }) {
         setIsScrolled(false);
       }
 
-      const sections = ['about', 'skills', 'projects', 'vision', 'experience', 'education', 'contact'];
+      const sections = ['about', 'skills', 'projects', 'blog', 'vision', 'experience', 'education', 'contact'];
       for (const section of sections) {
         const el = document.getElementById(section);
         if (el) {
@@ -43,6 +45,7 @@ export default function Navbar({ theme, toggleTheme, onOpenResume }) {
     { name: 'About', href: '#about' },
     { name: 'Skills', href: '#skills' },
     { name: 'Projects', href: '#projects' },
+    { name: 'Blog', href: '#blog' },
     { name: 'Vision', href: '#vision' },
     { name: 'Experience', href: '#experience' },
     { name: 'Education', href: '#education' },
@@ -109,6 +112,18 @@ export default function Navbar({ theme, toggleTheme, onOpenResume }) {
             <span>Resume</span>
           </button>
 
+          {/* Admin Panel Console Button */}
+          <button 
+            type="button" 
+            className="admin-nav-trigger-btn"
+            onClick={onOpenAdmin}
+            aria-label="Open Admin Console"
+            title="Open Admin Console (Manage Blog & Inquiries)"
+          >
+            <ShieldCheck size={17} />
+            <span className="admin-nav-text">Admin</span>
+          </button>
+
           {/* Mobile Menu Toggle */}
           <button 
             type="button" 
@@ -146,6 +161,18 @@ export default function Navbar({ theme, toggleTheme, onOpenResume }) {
               >
                 <FileText size={16} />
                 <span>View Full Resume</span>
+              </button>
+
+              <button 
+                type="button" 
+                className="btn btn-secondary w-full admin-mobile-menu-btn"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenAdmin();
+                }}
+              >
+                <ShieldCheck size={16} />
+                <span>Admin Operations Console</span>
               </button>
             </div>
           </div>

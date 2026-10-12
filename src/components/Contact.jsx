@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { LinkedinIcon, GithubIcon } from './Icons';
 import { portfolioData } from '../data/portfolioData';
+import { addInquiry } from '../data/blogData';
 
 export default function Contact({ onOpenResume }) {
   const { personal } = portfolioData;
@@ -44,6 +45,14 @@ export default function Contact({ onOpenResume }) {
 
     // Direct Gmail web compose link
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(personal.email)}&su=${emailSubject}&body=${emailBody}`;
+
+    // Persist to Admin Panel Inbox
+    addInquiry({
+      name: formData.name,
+      email: formData.email,
+      subject: formData.subject || 'Portfolio Inquiry',
+      message: formData.message
+    });
 
     // Open Gmail directly in a new window/tab
     window.open(gmailUrl, '_blank', 'noopener,noreferrer');

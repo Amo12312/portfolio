@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="bgGrad192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0d14"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="primaryGrad192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="50%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle Base -->
+  <rect width="192" height="192" rx="48" fill="url(#bgGrad192)"/>
+  <rect x="4" y="4" width="184" height="184" rx="44" fill="none" stroke="url(#primaryGrad192)" stroke-width="2" stroke-opacity="0.5"/>
+
+  <!-- Hexagon Shape -->
+  <polygon points="96,36 148,66 148,126 96,156 44,126 44,66" 
+           fill="none" 
+           stroke="url(#primaryGrad192)" 
+           stroke-width="5" 
+           stroke-linejoin="round" />
+
+  <!-- Monogram A -->
+  <path d="M72 130 L96 66 L120 130" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M80 110 L112 110" stroke="url(#primaryGrad192)" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="96" cy="66" r="6" fill="#38bdf8"/>
+</svg>

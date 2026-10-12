@@ -4,12 +4,15 @@ import Hero from './components/Hero';
 import About from './components/About';
 import Skills from './components/Skills';
 import Projects from './components/Projects';
+import Blog from './components/Blog';
 import Vision from './components/Vision';
 import Experience from './components/Experience';
 import Education from './components/Education';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ResumeModal from './components/ResumeModal';
+import AdminPanel from './components/AdminPanel';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 import './App.css';
 
 export default function App() {
@@ -17,11 +20,32 @@ export default function App() {
     return localStorage.getItem('theme') || 'dark';
   });
   const [isResumeOpen, setIsResumeOpen] = useState(false);
+  const [isAdminOpen, setIsAdminOpen] = useState(() => {
+    // Check if opened via PWA shortcut or URL param
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('view') === 'admin';
+    }
+    return false;
+  });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
+
+  // Global keyboard shortcut to open Admin Console: Ctrl+Shift+A or Alt+A
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) ||
+          (e.altKey && (e.key === 'A' || e.key === 'a'))) {
+        e.preventDefault();
+        setIsAdminOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const toggleTheme = () => {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
@@ -33,7 +57,8 @@ export default function App() {
       <Navbar 
         theme={theme} 
         toggleTheme={toggleTheme} 
-        onOpenResume={() => setIsResumeOpen(true)} 
+        onOpenResume={() => setIsResumeOpen(true)}
+        onOpenAdmin={() => setIsAdminOpen(true)}
       />
 
       {/* Main Content Sections */}
@@ -42,6 +67,7 @@ export default function App() {
         <About />
         <Skills />
         <Projects />
+        <Blog onOpenAdmin={() => setIsAdminOpen(true)} />
         <Vision />
         <Experience />
         <Education />
@@ -49,13 +75,23 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <Footer />
+      <Footer onOpenAdmin={() => setIsAdminOpen(true)} />
 
       {/* Full Resume View & Print Modal */}
       <ResumeModal 
         isOpen={isResumeOpen} 
         onClose={() => setIsResumeOpen(false)} 
       />
+
+      {/* Mobile-Friendly Admin Operations Console */}
+      <AdminPanel 
+        isOpen={isAdminOpen} 
+        onClose={() => setIsAdminOpen(false)} 
+      />
+
+      {/* Progressive Web App (PWA) Install Prompt */}
+      <PWAInstallPrompt />
     </div>
   );
 }
+

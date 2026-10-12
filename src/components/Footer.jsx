@@ -1,14 +1,15 @@
-import React from 'react';
 import { 
   ArrowUp, 
   Terminal, 
   Mail, 
-  Phone 
+  Phone,
+  ShieldCheck,
+  Smartphone
 } from 'lucide-react';
 import { LinkedinIcon, GithubIcon } from './Icons';
 import { portfolioData } from '../data/portfolioData';
 
-export default function Footer() {
+export default function Footer({ onOpenAdmin }) {
   const { personal } = portfolioData;
 
   const scrollToTop = () => {
@@ -34,6 +35,7 @@ export default function Footer() {
           <a href="#about">About</a>
           <a href="#skills">Skills</a>
           <a href="#projects">Projects</a>
+          <a href="#blog">Blog & Articles</a>
           <a href="#vision">Ideas & Vision</a>
           <a href="#experience">Experience</a>
           <a href="#contact">Contact</a>
@@ -89,9 +91,16 @@ export default function Footer() {
       <div className="footer-bottom-bar">
         <div className="container bottom-bar-inner">
           <p>© {new Date().getFullYear()} Amogh Ramteke. Built with curiosity, technology, and a focus on practical solutions.</p>
-          <p className="designed-note">
-            Technology & Business Professional
-          </p>
+          <div className="footer-admin-trigger-wrap">
+            <button 
+              type="button" 
+              className="footer-admin-link-btn"
+              onClick={onOpenAdmin}
+            >
+              <ShieldCheck size={14} />
+              <span>Admin Console</span>
+            </button>
+          </div>
         </div>
       </div>
     </footer>
