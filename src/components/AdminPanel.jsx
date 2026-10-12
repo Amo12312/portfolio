@@ -68,6 +68,11 @@ export default function AdminPanel({ isOpen, onClose }) {
   });
   const [saveSuccessNotice, setSaveSuccessNotice] = useState('');
 
+  // PWA & Mobile Installation state
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isStandalone, setIsStandalone] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+
   // Load data
   const refreshAllData = () => {
     setArticles(getStoredArticles());
@@ -76,14 +81,56 @@ export default function AdminPanel({ isOpen, onClose }) {
   };
 
   useEffect(() => {
+    // Check if running in standalone mode (installed PWA)
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || 
+      window.navigator.standalone === true;
+    setIsStandalone(standalone);
+
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    setIsIOS(/iphone|ipad|ipod/.test(userAgent));
+
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  useEffect(() => {
     if (isOpen) {
       refreshAllData();
       document.body.style.overflow = 'hidden';
+
+      // Check URL parameters for shortcut actions
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('action') === 'new') {
+          setActiveTab('articles');
+          handleOpenCreate();
+        } else if (params.get('tab') === 'inquiries') {
+          setActiveTab('inquiries');
+        }
+      }
     }
     return () => {
       document.body.style.overflow = '';
     };
   }, [isOpen]);
+
+  const handleInstallPWA = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setIsStandalone(true);
+      triggerNotice('Admin Studio app installed successfully!');
+    }
+    setDeferredPrompt(null);
+  };
 
   if (!isOpen) return null;
 
@@ -446,6 +493,65 @@ export default function AdminPanel({ isOpen, onClose }) {
                   </div>
                 </div>
 
+                {/* Dedicated Mobile PWA Blogging Card */}
+                <div className="admin-pwa-cta-card glass-panel">
+                  <div className="pwa-cta-header">
+                    <div className="pwa-cta-icon-badge">
+                      <Smartphone size={24} />
+                    </div>
+                    <div className="pwa-cta-titles">
+                      <div className="pwa-status-tag-row">
+                        <span className="pwa-tag-pill">Mobile Blogging Studio</span>
+                        {isStandalone ? (
+                          <span className="pwa-installed-pill">
+                            <CheckCircle size={12} />
+                            Installed on Device
+                          </span>
+                        ) : (
+                          <span className="pwa-installable-pill">PWA Ready</span>
+                        )}
+                      </div>
+                      <h4>Install Admin Studio on Phone</h4>
+                      <p>Add this Admin Console directly to your mobile home screen. Launches fullscreen with 1 tap to write, preview, and publish blog articles on the go.</p>
+                    </div>
+                  </div>
+
+                  <div className="pwa-cta-actions">
+                    {isStandalone ? (
+                      <div className="pwa-installed-banner">
+                        <Check size={16} color="#10b981" />
+                        <span>Running as standalone mobile app. You can publish blogs anytime offline or online!</span>
+                      </div>
+                    ) : deferredPrompt ? (
+                      <button 
+                        type="button" 
+                        className="btn btn-primary btn-sm pwa-primary-install-btn"
+                        onClick={handleInstallPWA}
+                      >
+                        <Download size={16} />
+                        <span>Install Admin App to Home Screen</span>
+                      </button>
+                    ) : isIOS ? (
+                      <div className="ios-install-guide">
+                        <span>📲 <strong>iPhone / iPad:</strong> Tap Safari's <strong>Share</strong> icon and select <strong>"Add to Home Screen"</strong></span>
+                      </div>
+                    ) : (
+                      <div className="browser-install-guide">
+                        <button 
+                          type="button" 
+                          className="btn btn-primary btn-sm"
+                          onClick={() => {
+                            alert('To install on your phone:\n1. Open this page in Chrome or Safari on your phone.\n2. Tap the browser menu (⋮ or Share).\n3. Select "Add to Home Screen" or "Install App".');
+                          }}
+                        >
+                          <Download size={16} />
+                          <span>Mobile Install Instructions</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* Quick Action Buttons */}
                 <div className="admin-quick-actions glass-panel">
                   <h4 className="pane-section-title">Quick Actions</h4>
@@ -698,24 +804,36 @@ export default function AdminPanel({ isOpen, onClose }) {
                     <div className="settings-card-header">
                       <Smartphone size={20} className="stat-icon-indigo" />
                       <div>
-                        <h4>Progressive Web App (PWA)</h4>
-                        <p>Installable directly onto Android, iPhone, Windows & macOS.</p>
+                        <h4>Admin Studio Mobile PWA</h4>
+                        <p>Dedicated standalone mobile app for writing and publishing blogs on your phone.</p>
                       </div>
                     </div>
                     <div className="pwa-features-list">
                       <div className="pwa-feature-item">
                         <CheckCircle size={15} color="#10b981" />
-                        <span>Web App Manifest configured (`manifest.json`)</span>
+                        <span>Launch Target: <code>/?view=admin</code> (Opens directly into blogging console)</span>
                       </div>
                       <div className="pwa-feature-item">
                         <CheckCircle size={15} color="#10b981" />
-                        <span>Service Worker caching enabled (`/sw.js`)</span>
+                        <span>Manifest & Service Worker configured for standalone mobile execution</span>
                       </div>
                       <div className="pwa-feature-item">
                         <CheckCircle size={15} color="#10b981" />
-                        <span>Mobile standalone fullscreen UI enabled</span>
+                        <span>Status: <strong>{isStandalone ? "Running in Standalone Mobile Mode" : "Ready to install"}</strong></span>
                       </div>
                     </div>
+                    {!isStandalone && deferredPrompt && (
+                      <div style={{ marginTop: '1rem' }}>
+                        <button 
+                          type="button" 
+                          className="btn btn-primary btn-sm"
+                          onClick={handleInstallPWA}
+                        >
+                          <Download size={15} />
+                          <span>Install Admin App Now</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {/* Data Backup & Restore */}

@@ -12,7 +12,6 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ResumeModal from './components/ResumeModal';
 import AdminPanel from './components/AdminPanel';
-import PWAInstallPrompt from './components/PWAInstallPrompt';
 import './App.css';
 
 export default function App() {
@@ -21,10 +20,12 @@ export default function App() {
   });
   const [isResumeOpen, setIsResumeOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(() => {
-    // Check if opened via PWA shortcut or URL param
+    // Check if launched as installed Standalone Mobile PWA or via ?view=admin
     if (typeof window !== 'undefined') {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+        window.navigator.standalone === true;
       const params = new URLSearchParams(window.location.search);
-      return params.get('view') === 'admin';
+      return isStandalone || params.get('view') === 'admin';
     }
     return false;
   });
@@ -88,9 +89,6 @@ export default function App() {
         isOpen={isAdminOpen} 
         onClose={() => setIsAdminOpen(false)} 
       />
-
-      {/* Progressive Web App (PWA) Install Prompt */}
-      <PWAInstallPrompt />
     </div>
   );
 }

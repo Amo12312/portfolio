@@ -1,13 +1,13 @@
 {
-  "name": "Amogh Ramteke | Portfolio & Admin",
-  "short_name": "Amogh.R",
-  "description": "IT Support Executive, Systems Builder & Full-Stack Web Developer Portfolio and Mobile Admin Console",
-  "start_url": "/",
+  "name": "Amogh Admin Studio",
+  "short_name": "Admin Studio",
+  "description": "Mobile Admin Console & Blog Publisher for Amogh Ramteke",
+  "start_url": "/?view=admin",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0a0d14",
-  "theme_color": "#4f46e5",
+  "background_color": "#0a0e17",
+  "theme_color": "#6366f1",
   "icons": [
     {
       "src": "/icon-192.svg",
@@ -30,19 +30,26 @@
   ],
   "shortcuts": [
     {
-      "name": "Admin Panel",
-      "short_name": "Admin",
-      "description": "Open Mobile Admin Console",
-      "url": "/?view=admin",
+      "name": "Post New Article",
+      "short_name": "New Post",
+      "description": "Quickly compose and publish a new blog post",
+      "url": "/?view=admin&action=new",
       "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
     },
     {
-      "name": "Blog Section",
-      "short_name": "Blog",
-      "description": "Read Technical Articles",
-      "url": "/#blog",
+      "name": "Client Inquiries",
+      "short_name": "Inquiries",
+      "description": "View messages submitted from contact form",
+      "url": "/?view=admin&tab=inquiries",
+      "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "View Live Portfolio",
+      "short_name": "Portfolio",
+      "description": "Open public portfolio website",
+      "url": "/",
       "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
     }
   ],
-  "categories": ["business", "developer", "productivity", "utilities"]
+  "categories": ["productivity", "developer", "utilities", "business"]
 }
