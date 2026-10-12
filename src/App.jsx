@@ -12,6 +12,7 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ResumeModal from './components/ResumeModal';
 import AdminPanel from './components/AdminPanel';
+import AIAssistant from './components/AIAssistant';
 import './App.css';
 
 export default function App() {
@@ -89,6 +90,9 @@ export default function App() {
         isOpen={isAdminOpen} 
         onClose={() => setIsAdminOpen(false)} 
       />
+
+      {/* Interactive AI Knowledge Assistant */}
+      <AIAssistant onOpenResume={() => setIsResumeOpen(true)} />
     </div>
   );
 }

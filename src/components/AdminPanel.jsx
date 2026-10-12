@@ -862,6 +862,89 @@ export default function AdminPanel({ isOpen, onClose }) {
                     </div>
                   </div>
 
+                  {/* Telegram Instant Mobile Notifications */}
+                  <div className="settings-card glass-panel">
+                    <div className="settings-card-header">
+                      <div className="stat-icon-cyan" style={{ fontSize: '1.4rem' }}>📲</div>
+                      <div>
+                        <h4>Telegram Instant Phone Alerts</h4>
+                        <p>Receive immediate notifications on your phone whenever someone submits the contact form.</p>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+                      <div className="form-group">
+                        <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)' }}>Telegram Bot Token (from @BotFather)</label>
+                        <input 
+                          type="text" 
+                          placeholder="e.g. 7123456789:AAH..."
+                          defaultValue={settings.telegramBotToken || ''}
+                          id="tgTokenInput"
+                          className="pin-edit-input"
+                          style={{ width: '100%' }}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)' }}>Telegram Chat ID (from @userinfobot)</label>
+                        <input 
+                          type="text" 
+                          placeholder="e.g. 123456789"
+                          defaultValue={settings.telegramChatId || ''}
+                          id="tgChatInput"
+                          className="pin-edit-input"
+                          style={{ width: '100%' }}
+                        />
+                      </div>
+                      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                        <button 
+                          type="button" 
+                          className="btn btn-primary btn-sm"
+                          onClick={() => {
+                            const token = document.getElementById('tgTokenInput')?.value.trim();
+                            const chatId = document.getElementById('tgChatInput')?.value.trim();
+                            const updated = { ...settings, telegramBotToken: token, telegramChatId: chatId };
+                            saveAdminSettings(updated);
+                            setSettings(updated);
+                            triggerNotice('Telegram settings saved!');
+                          }}
+                        >
+                          Save Telegram Settings
+                        </button>
+                        <button 
+                          type="button" 
+                          className="btn btn-secondary btn-sm"
+                          onClick={async () => {
+                            const token = document.getElementById('tgTokenInput')?.value.trim() || settings.telegramBotToken;
+                            const chatId = document.getElementById('tgChatInput')?.value.trim() || settings.telegramChatId;
+                            if (!token || !chatId) {
+                              alert('Please enter and save Bot Token and Chat ID first!');
+                              return;
+                            }
+                            try {
+                              const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                  chat_id: chatId,
+                                  text: `🚀 *Test Alert from Amogh's Portfolio!*\n\nYour Telegram instant notifications are working properly.`,
+                                  parse_mode: 'Markdown'
+                                })
+                              });
+                              if (res.ok) {
+                                triggerNotice('Test alert sent! Check your Telegram phone app.');
+                              } else {
+                                alert('Telegram rejected the request. Please verify token and chat ID.');
+                              }
+                            } catch (e) {
+                              alert('Error connecting to Telegram API: ' + e.message);
+                            }
+                          }}
+                        >
+                          Send Test Alert
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Security PIN Change */}
                   <div className="settings-card glass-panel">
                     <div className="settings-card-header">

@@ -332,6 +332,32 @@ export function saveStoredInquiries(inquiries) {
   }
 }
 
+// Send Telegram Instant Alert to Amogh's phone
+export async function sendTelegramNotification(inquiry) {
+  try {
+    const settings = getAdminSettings();
+    const token = settings.telegramBotToken?.trim();
+    const chatId = settings.telegramChatId?.trim();
+
+    // If bot token and chat id are configured by Amogh in Settings
+    if (token && chatId) {
+      const text = `🔔 *New Portfolio Inquiry!*\n\n👤 *From:* ${inquiry.name}\n📧 *Email:* ${inquiry.email}\n📝 *Subject:* ${inquiry.subject || 'Portfolio Inquiry'}\n\n💬 *Message:*\n${inquiry.message}\n\n⏱ _Sent at ${new Date().toLocaleTimeString('en-US')}_`;
+
+      await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: text,
+          parse_mode: 'Markdown'
+        })
+      });
+    }
+  } catch (err) {
+    console.warn('Telegram notification skipped/failed:', err);
+  }
+}
+
 export function addInquiry(inquiry) {
   const inquiries = getStoredInquiries();
   const newEntry = {
@@ -342,6 +368,10 @@ export function addInquiry(inquiry) {
   };
   const updated = [newEntry, ...inquiries];
   saveStoredInquiries(updated);
+
+  // Trigger background telegram push
+  sendTelegramNotification(newEntry);
+
   return updated;
 }
 
@@ -368,14 +398,16 @@ export function getAdminSettings() {
         pin: 'amogh2026',
         availableForWork: true,
         statusBadgeText: 'Available for New Opportunities',
-        customTagline: 'Technology. Business. Better Systems.'
+        customTagline: 'Technology. Business. Better Systems.',
+        telegramBotToken: '',
+        telegramChatId: ''
       };
       localStorage.setItem(ADMIN_SETTINGS_KEY, JSON.stringify(defaults));
       return defaults;
     }
     return JSON.parse(raw);
   } catch {
-    return { pin: 'amogh2026', availableForWork: true, statusBadgeText: 'Available for New Opportunities' };
+    return { pin: 'amogh2026', availableForWork: true, statusBadgeText: 'Available for New Opportunities', telegramBotToken: '', telegramChatId: '' };
   }
 }
 
