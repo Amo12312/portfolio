@@ -220,17 +220,6 @@ export default function Blog({ onOpenAdmin }) {
           </div>
         )}
 
-        {/* Admin Quick Action Prompt */}
-        <div className="blog-admin-hint">
-          <span>Need to publish a new article or edit posts?</span>
-          <button 
-            type="button" 
-            className="blog-admin-link"
-            onClick={onOpenAdmin}
-          >
-            Open Admin Console
-          </button>
-        </div>
       </div>
 
       {/* Reader Modal */}

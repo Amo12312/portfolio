@@ -388,12 +388,8 @@ export default function AdminPanel({ isOpen, onClose }) {
                   </button>
                 </div>
                 {pinError && (
-                  <p className="pin-error-text">Invalid PIN. Please try again.</p>
+                  <p className="pin-error-text">Incorrect PIN passcode.</p>
                 )}
-                <div className="pin-hint-box">
-                  <Sparkles size={14} />
-                  <span>Default Passcode: <strong>amogh2026</strong></span>
-                </div>
               </form>
             </div>
           </div>

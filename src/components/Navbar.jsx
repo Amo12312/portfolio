@@ -61,11 +61,32 @@ export default function Navbar({ theme, toggleTheme, onOpenResume, onOpenAdmin }
     }
   };
 
+  const [brandClickCount, setBrandClickCount] = useState(0);
+
+  const handleBrandClick = (e) => {
+    e.preventDefault();
+    setBrandClickCount(prev => {
+      const next = prev + 1;
+      if (next >= 3) {
+        if (onOpenAdmin) onOpenAdmin();
+        return 0;
+      }
+      setTimeout(() => setBrandClickCount(0), 1200);
+      return next;
+    });
+    handleNavClick(e, '#hero');
+  };
+
   return (
     <header className={`navbar-container ${isScrolled ? 'scrolled' : ''}`}>
       <div className="container nav-content">
-        {/* Brand Logo */}
-        <a href="#hero" className="brand-logo" onClick={(e) => handleNavClick(e, '#hero')}>
+        {/* Brand Logo - Secret 3-Click Admin Trigger */}
+        <a 
+          href="#hero" 
+          className="brand-logo" 
+          onClick={handleBrandClick}
+          title="Amogh Ramteke"
+        >
           <div className="brand-icon">
             <Terminal size={18} />
           </div>
@@ -112,18 +133,6 @@ export default function Navbar({ theme, toggleTheme, onOpenResume, onOpenAdmin }
             <span>Resume</span>
           </button>
 
-          {/* Admin Panel Console Button */}
-          <button 
-            type="button" 
-            className="admin-nav-trigger-btn"
-            onClick={onOpenAdmin}
-            aria-label="Open Admin Console"
-            title="Open Admin Console (Manage Blog & Inquiries)"
-          >
-            <ShieldCheck size={17} />
-            <span className="admin-nav-text">Admin</span>
-          </button>
-
           {/* Mobile Menu Toggle */}
           <button 
             type="button" 
@@ -161,18 +170,6 @@ export default function Navbar({ theme, toggleTheme, onOpenResume, onOpenAdmin }
               >
                 <FileText size={16} />
                 <span>View Full Resume</span>
-              </button>
-
-              <button 
-                type="button" 
-                className="btn btn-secondary w-full admin-mobile-menu-btn"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenAdmin();
-                }}
-              >
-                <ShieldCheck size={16} />
-                <span>Admin Operations Console</span>
               </button>
             </div>
           </div>

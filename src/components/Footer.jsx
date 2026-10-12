@@ -91,16 +91,9 @@ export default function Footer({ onOpenAdmin }) {
       <div className="footer-bottom-bar">
         <div className="container bottom-bar-inner">
           <p>© {new Date().getFullYear()} Amogh Ramteke. Built with curiosity, technology, and a focus on practical solutions.</p>
-          <div className="footer-admin-trigger-wrap">
-            <button 
-              type="button" 
-              className="footer-admin-link-btn"
-              onClick={onOpenAdmin}
-            >
-              <ShieldCheck size={14} />
-              <span>Admin Console</span>
-            </button>
-          </div>
+          <p className="designed-note">
+            Technology & Business Professional
+          </p>
         </div>
       </div>
     </footer>
