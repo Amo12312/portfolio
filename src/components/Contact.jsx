@@ -25,6 +25,8 @@ export default function Contact({ onOpenResume }) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleChange = (e) => {
     setFormData(prev => ({
       ...prev,
@@ -36,17 +38,9 @@ export default function Contact({ onOpenResume }) {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) return;
 
-    const emailSubject = encodeURIComponent(
-      formData.subject || `Inquiry from Portfolio: ${formData.name}`
-    );
-    const emailBody = encodeURIComponent(
-      `Hello Amogh,\n\nName: ${formData.name}\nEmail: ${formData.email}\nSubject: ${formData.subject || 'Portfolio Inquiry'}\n\nMessage:\n${formData.message}\n\n---\nSent via Amogh Ramteke Portfolio`
-    );
+    setIsSubmitting(true);
 
-    // Direct Gmail web compose link
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(personal.email)}&su=${emailSubject}&body=${emailBody}`;
-
-    // Persist to Admin Panel Inbox
+    // 1. Immediately persist message to Admin Panel Inbox
     addInquiry({
       name: formData.name,
       email: formData.email,
@@ -54,10 +48,9 @@ export default function Contact({ onOpenResume }) {
       message: formData.message
     });
 
-    // Open Gmail directly in a new window/tab
-    window.open(gmailUrl, '_blank', 'noopener,noreferrer');
-
+    // 2. Set submitted state to show success state in page
     setIsSubmitted(true);
+    setIsSubmitting(false);
   };
 
   const copyEmail = () => {
@@ -198,39 +191,39 @@ export default function Contact({ onOpenResume }) {
             {isSubmitted ? (
               <div className="form-success-box">
                 <div className="success-icon-wrap">
-                  <CheckCircle size={36} className="text-emerald" />
+                  <CheckCircle size={42} className="text-emerald" />
                 </div>
-                <h4>Opening Gmail Compose...</h4>
+                <h4>Message Sent Successfully!</h4>
                 <p>
-                  Your message draft has been prepared and opened directly in Gmail addressed to <strong>{personal.email}</strong>.
+                  Thank you, <strong>{formData.name}</strong>. Your inquiry has been sent and saved to Amogh's admin inbox.
                 </p>
                 <div className="gmail-fallback-actions">
                   <a 
-                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(personal.email)}&su=${encodeURIComponent(formData.subject || `Inquiry from Portfolio: ${formData.name}`)}&body=${encodeURIComponent(`Hello Amogh,\n\nName: ${formData.name}\nEmail: ${formData.email}\nSubject: ${formData.subject || 'Portfolio Inquiry'}\n\nMessage:\n${formData.message}\n\n---\nSent via Amogh Ramteke Portfolio`)}`}
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="btn btn-primary btn-sm"
-                  >
-                    <Mail size={14} />
-                    <span>Reopen in Gmail</span>
-                  </a>
-                  <a 
-                    href={`mailto:${personal.email}?subject=${encodeURIComponent(formData.subject || `Inquiry: ${formData.name}`)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`)}`}
+                    href={`mailto:${personal.email}?subject=${encodeURIComponent(formData.subject || `Inquiry from ${formData.name}`)}&body=${encodeURIComponent(`Hi Amogh,\n\nName: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`)}`}
                     className="btn btn-secondary btn-sm"
                   >
-                    <span>Open in Default Mail App</span>
+                    <Mail size={14} />
+                    <span>Send via Email Client</span>
+                  </a>
+                  <a 
+                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(personal.email)}&su=${encodeURIComponent(formData.subject || `Inquiry from ${formData.name}`)}&body=${encodeURIComponent(`Hi Amogh,\n\nName: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`)}`}
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="btn btn-outline btn-sm"
+                  >
+                    <span>Open in Gmail</span>
                   </a>
                 </div>
                 <button 
                   type="button" 
-                  className="btn btn-outline btn-sm"
+                  className="btn btn-primary btn-sm"
                   style={{ marginTop: '0.8rem' }}
                   onClick={() => {
                     setIsSubmitted(false);
                     setFormData({ name: '', email: '', subject: '', message: '' });
                   }}
                 >
-                  Write Another Message
+                  Send Another Message
                 </button>
               </div>
             ) : (
@@ -287,9 +280,13 @@ export default function Contact({ onOpenResume }) {
                   ></textarea>
                 </div>
 
-                <button type="submit" className="btn btn-primary w-full">
+                <button 
+                  type="submit" 
+                  className="btn btn-primary w-full"
+                  disabled={isSubmitting}
+                >
                   <Send size={16} />
-                  <span>Send Message</span>
+                  <span>{isSubmitting ? "Sending..." : "Send Message"}</span>
                 </button>
               </form>
             )}

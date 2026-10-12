@@ -2135,8 +2135,34 @@
     grid-template-columns: 1fr;
     gap: 1.2rem;
   }
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 1.8rem;
+  }
+  .contact-info-card,
+  .contact-form-card {
+    padding: 1.35rem 1.15rem;
+    border-radius: var(--radius-lg);
+  }
+  .contact-form-title,
+  .contact-info-title {
+    font-size: 1.25rem;
+  }
+  .contact-item {
+    padding: 0.75rem 0.85rem;
+  }
+  .contact-value {
+    font-size: 0.84rem;
+    word-break: break-all;
+  }
   .form-group-row {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .form-group input, 
+  .form-group textarea {
+    font-size: 16px; /* Prevents auto-zoom on iOS */
+    padding: 0.8rem 1rem;
   }
   
   /* Projects Section */
